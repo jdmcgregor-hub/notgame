@@ -1,4 +1,148 @@
+
+<!DOCTYPE html>
 <html>
-  <title>NO GAAME</title>
-  <center>This is not a game!<br><img src="test.png.png"></center>
+<head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #8B4513;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: url('/api/placeholder/800/600');
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .clock-container {
+      background-color: rgba(139, 69, 19, 0.8);
+      border: 15px solid #5E2612;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7), inset 0 0 10px rgba(0, 0, 0, 0.5);
+      position: relative;
+      width: 300px;
+    }
+    
+    .clock-container:before {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      border: 2px solid #DAA520;
+      border-radius: 5px;
+      pointer-events: none;
+    }
+    
+    .clock-header {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #DAA520;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    
+    .clock-face {
+      background-color: #000;
+      padding: 20px;
+      border-radius: 5px;
+      color: #FF4500;
+      font-size: 50px;
+      font-weight: bold;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      box-shadow: inset 0 0 10px rgba(255, 69, 0, 0.3);
+      text-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+      border: 3px solid #DAA520;
+    }
+    
+    .clock-decorations {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    
+    .decoration {
+      width: 30px;
+      height: 30px;
+      background-color: #DAA520;
+      border-radius: 50%;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+    
+    .am-pm {
+      font-size: 24px;
+      color: #DAA520;
+      margin-left: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+    
+    .caption {
+      text-align: center;
+      color: #DAA520;
+      margin-top: 15px;
+      font-size: 18px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="clock-container">
+    <div class="clock-header">
+      <h2>WILD WEST TIME</h2>
+    </div>
+    <div class="clock-face">
+      <span id="hours">12</span>:<span id="minutes">00</span>
+      <span class="am-pm" id="ampm">AM</span>
+    </div>
+    <div class="clock-decorations">
+      <div class="decoration"></div>
+      <div class="decoration"></div>
+      <div class="decoration"></div>
+    </div>
+    <div class="caption">HIGH NOON OR MIDNIGHT?</div>
+  </div>
+
+  <script>
+    // Clock where 1 hour = 20 seconds in real time
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const ampmEl = document.getElementById('ampm');
+    
+    let hour = 12;
+    let minute = 0;
+    let isAM = true;
+    
+    // 1 hour = 20 seconds, so 1 minute = 20/60 = 1/3 seconds
+    // We'll update every 100ms and increment minute by 5
+    function updateClock() {
+      minute += 5;
+      
+      if (minute >= 60) {
+        minute = 0;
+        hour++;
+        
+        if (hour > 12) {
+          hour = 1;
+        }
+        
+        if (hour === 12) {
+          isAM = !isAM;
+        }
+      }
+      
+      hoursEl.textContent = hour;
+      minutesEl.textContent = minute < 10 ? `0${minute}` : minute;
+      ampmEl.textContent = isAM ? 'AM' : 'PM';
+    }
+    
+    // Update every 100ms (5 minutes in our clock time)
+    setInterval(updateClock, 100);
+  </script>
+</body>
 </html>
