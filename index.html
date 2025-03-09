@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -89,6 +88,41 @@
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
       font-weight: bold;
     }
+
+    .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .control-button {
+      background-color: #8B4513;
+      color: #DAA520;
+      border: 3px solid #DAA520;
+      border-radius: 5px;
+      padding: 8px 10px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+      transition: all 0.3s ease;
+      font-family: 'Courier New', monospace;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      flex: 1;
+    }
+
+    .control-button:hover {
+      background-color: #5E2612;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .control-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -106,25 +140,39 @@
       <div class="decoration"></div>
     </div>
     <div class="caption">HIGH NOON OR MIDNIGHT?</div>
+    <div class="button-container">
+      <button id="controlButton" class="control-button">Stop Time</button>
+      <button id="resetButton" class="control-button">Reset to 9 PM</button>
+    </div>
   </div>
 
   <script>
-    // Clock where 1 hour = 20 seconds in real time
+    // Clock where 1 hour takes exactly 20 seconds in real time
     const hoursEl = document.getElementById('hours');
     const minutesEl = document.getElementById('minutes');
     const ampmEl = document.getElementById('ampm');
+    const controlButton = document.getElementById('controlButton');
+    const resetButton = document.getElementById('resetButton');
     
     let hour = 12;
     let minute = 0;
     let isAM = true;
+    let isRunning = true;
+    let intervalId = null;
     
-    // 1 hour = 20 seconds, so 1 minute = 20/60 = 1/3 seconds
-    // We'll update every 100ms and increment minute by 5
+    // 20 seconds per hour means 1 second = 3 minutes of clock time
+    const minutesPerSecond = 3;
+    // Update every 100ms = 18 seconds per minute
+    const updateInterval = 100;
+    const minutesPerUpdate = minutesPerSecond / (1000 / updateInterval);
+    
     function updateClock() {
-      minute += 5;
+      if (!isRunning) return;
+      
+      minute += minutesPerUpdate;
       
       if (minute >= 60) {
-        minute = 0;
+        minute = minute % 60;
         hour++;
         
         if (hour > 12) {
@@ -137,12 +185,43 @@
       }
       
       hoursEl.textContent = hour;
-      minutesEl.textContent = minute < 10 ? `0${minute}` : minute;
+      minutesEl.textContent = Math.floor(minute) < 10 ? `0${Math.floor(minute)}` : Math.floor(minute);
       ampmEl.textContent = isAM ? 'AM' : 'PM';
     }
     
-    // Update every 100ms (5 minutes in our clock time)
-    setInterval(updateClock, 100);
+    // Toggle clock running state
+    function toggleClock() {
+      isRunning = !isRunning;
+      updateControlButtonText();
+    }
+    
+    // Update the control button text based on running state
+    function updateControlButtonText() {
+      controlButton.textContent = isRunning ? "Stop Time" : "Start Time";
+    }
+    
+    // Reset clock to 9 PM and stop the time
+    function resetClock() {
+      hour = 9;
+      minute = 0;
+      isAM = false;
+      
+      // Stop the clock
+      isRunning = false;
+      updateControlButtonText();
+      
+      // Update display immediately
+      hoursEl.textContent = hour;
+      minutesEl.textContent = "00";
+      ampmEl.textContent = "PM";
+    }
+    
+    // Set up event listeners for buttons
+    controlButton.addEventListener('click', toggleClock);
+    resetButton.addEventListener('click', resetClock);
+    
+    // Start the clock initially
+    intervalId = setInterval(updateClock, updateInterval);
   </script>
 </body>
 </html>
